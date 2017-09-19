@@ -2,183 +2,80 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Cube
-{
-    private GameObject _target;
-    private Vector3 _Point;
-
-    public Cube(GameObject target, Vector3 mouspos)
-    {
-        _target = target;
-        _Point = mouspos;
-    }
-
-    public void Move()
-    {
-        if(Mathf.Abs(Input.GetAxisRaw("Mouse X"))  < Mathf.Abs(Input.GetAxisRaw("Mouse Y")))
-        {
-            _target.transform.position = new Vector3(_target.transform.position.x, _Point.y, _target.transform.position.z);
-        }
-        else
-        {
-            _target.transform.position = new Vector3(_Point.x, _target.transform.position.y, _target.transform.position.z);
-        }
-    }
-}
-
-public class Cylinder
-{
-    private GameObject _target;
-    private Vector3 _Point;
-
-    public Cylinder(GameObject target, Vector3 mouspos)
-    {
-        _target = target;
-        _Point = mouspos;
-    }
-
-    public void Move()
-    {
-        _target.transform.position = new Vector3(_target.transform.position.x, _Point.y, _target.transform.position.z);
-    }
-}
-
-public class Sphere
-{
-    private GameObject _target;
-    private Vector3 _Point;
-
-    public Sphere(GameObject target, Vector3 mouspos)
-    {
-        _target = target;
-        _Point = mouspos;
-    }
-
-    public void Move()
-    {
-        _target.transform.position = _Point;
-    }
-}
-
-public class GenericContainer<T>
-{
-    private T _value;
-
-    public void SetValue(T value)
-    {
-        _value = value;
-    }
-
-    public T GetValue()
-    {
-        return _value;
-    }
-}
-
 public class ObjectManager : MonoBehaviour {
 
-    private Vector3 mousePos;
+    public static ObjectManager instance;
+    public Vector3 Obpos;
+    string chobj;
 
-    public GameObject Sphere;
-    public GameObject Cube;
-    public GameObject Cylinder;
-
-    private GameObject target;
-
-    void Update() {
-        if (Input.GetMouseButtonDown(0))
-        {
-            target = GetClickedObject();
-        }
-
-        // 클릭시 오브젝트 있으면 실행
-        if(target != null)
-        {
-            MeshRenderer mr = target.GetComponent<MeshRenderer>();
-            if (Input.GetMouseButtonDown(0))
-                mr.material.color = Color.red;// = Shader.Find("click");
-            if (Input.GetMouseButton(0))
-            {
-                mousePos = Camera.main.ScreenToWorldPoint(
-                new Vector3(
-                Input.mousePosition.x,
-                Input.mousePosition.y,
-                -Camera.main.transform.position.z)
-                );
-                if (target.transform.tag == "Cube")
-                {
-                    GenericContainer<Cube> gContain = new GenericContainer<Cube>();
-                    gContain.SetValue(new Cube(target, mousePos));
-                    gContain.GetValue().Move();
-                }
-                else if (target.transform.tag == "Cylinder")
-                {
-                    GenericContainer<Cylinder> gContain = new GenericContainer<Cylinder>();
-                    gContain.SetValue(new Cylinder(target, mousePos));
-                    gContain.GetValue().Move();
-                }
-                else if (target.transform.tag == "Sphere")
-                {
-                    GenericContainer<Sphere> gContain = new GenericContainer<Sphere>();
-                    gContain.SetValue(new Sphere(target, mousePos));
-                    gContain.GetValue().Move();
-                }
-            }
-            if (Input.GetMouseButtonUp(0))
-            {
-                mr.material.color = Color.white;
-                return;
-            }
-        }
-
-        // 클릭시 오브젝트 없으면 생성
-        if (Input.GetMouseButtonUp(0))
-        {
-            mousePos = Camera.main.ScreenToWorldPoint(
-            new Vector3(
-            Input.mousePosition.x,
-            Input.mousePosition.y,
-            -Camera.main.transform.position.z)
-            );
-            print(mousePos);
-
-            Createobj();
-        }
+    private void Awake()
+    {
+        instance = this;
     }
 
-    void Createobj()
+    public void Createobj()
     {
         int rand = 0;
         rand = Random.Range(0, 3);
-
-        if (rand == 0)
+        
+        switch(rand)
         {
-            GameObject obj = Instantiate(Sphere) as GameObject;
-            obj.transform.position = mousePos;
-        }
-        else if (rand == 1)
-        {
-            GameObject obj = Instantiate(Cube) as GameObject;
-            obj.transform.position = mousePos;
-        }
-        else if (rand == 2)
-        {
-            GameObject obj = Instantiate(Cylinder) as GameObject;
-            obj.transform.position = mousePos;
+            case 0:
+                GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                sphere.transform.position = Obpos;
+                break;
+            case 1:
+                GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                cube.transform.position = Obpos;
+                break;
+            case 2:
+                GameObject cylinder = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                cylinder.transform.position = Obpos;
+                break;
         }
     }
 
-    private GameObject GetClickedObject()
+    public void Clickobj(GameObject target, bool click)
     {
-        RaycastHit hit;
-        GameObject target = null;
-        
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        
-        if (true == (Physics.Raycast(ray.origin, ray.direction * 10, out hit)))
+        switch(chobj)
         {
-            target = hit.collider.gameObject;
+            case "Cube":
+                IObj iobj1 = new ObjCube();
+                iobj1.Clickobj(target, click);
+                break;
+            case "Cylinder":
+                IObj iobj2 = new ObjCylinder();
+                iobj2.Clickobj(target, click);
+                break;
+            case "Sphere":
+                IObj iobj3 = new ObjSphere();
+                iobj3.Clickobj(target, click);
+                break;
         }
-        return target;
+        
+    }
+
+    public void Moveobj(GameObject target, Vector3 mousepos)
+    {
+        switch (chobj)
+        {
+            case "Cube":
+                IObj iobj1 = new ObjCube();
+                iobj1.Moveobj(target, Obpos, mousepos);
+                break;
+            case "Cylinder":
+                IObj iobj2 = new ObjCylinder();
+                iobj2.Moveobj(target, Obpos, mousepos);
+                break;
+            case "Sphere":
+                IObj iobj3 = new ObjSphere();
+                iobj3.Moveobj(target, Obpos, mousepos);
+                break;
+        }
+    }
+
+    public void Checkobj(GameObject target)
+    {
+        chobj = target.transform.tag;
     }
 }
