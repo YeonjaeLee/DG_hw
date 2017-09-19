@@ -8,17 +8,24 @@ public class ObjectManager : MonoBehaviour {
     public Vector3 Obpos;
     string chobj;
 
+    public csIObjMove[] list;
+
     private void Awake()
     {
         instance = this;
     }
-
+    
     public void Createobj()
     {
         int rand = 0;
         rand = Random.Range(0, 3);
-        
-        switch(rand)
+
+        foreach (var c in list)
+        {
+            c.GetComponent<csIObjMove>().csMove();
+        }
+
+        switch (rand)
         {
             case 0:
                 GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
