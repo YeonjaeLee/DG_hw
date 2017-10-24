@@ -14,23 +14,25 @@ public class GameManager : MonoBehaviour {
     public float Wavelength = 0;    // 파장
     public float Amplitude = 0;     // 진폭 (최대 높이 값)
     
-    public Vector3 Obpos;
+    public static GameObject target = null;
+    public static GameObject player;
 
     private void Awake () {
         SoilPrefab = Resources.Load<GameObject>("03.Prefabs/Soil");
 
+        int index = 0;
         for (int x=0; x<Width_x;x++)
         {
             for(int z=0; z< Width_z; z++)
             {
-                //BlockList.Add(Instantiate(SoilPrefab, new Vector3(x, 0, z), Quaternion.identity));
                 GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 cube.transform.position = new Vector3(x, 0, z);
                 cube.AddComponent<Block>();
+                Block.instance.Index = index;
                 BlockList.Add(cube);
+                index++;
             }
         }
-
         for(int i=0; i<BlockList.Count; i++)
         {
             float xCoord = (BlockList[i].transform.position.x) / Wavelength;
@@ -39,5 +41,20 @@ public class GameManager : MonoBehaviour {
             BlockList[i].transform.position = new Vector3(BlockList[i].transform.position.x, y/2, BlockList[i].transform.position.z);
             BlockList[i].transform.localScale = new Vector3(1, y, 1);
         }
-	}
+
+        CreatePlayer();
+    }
+
+    private void CreatePlayer()
+    {
+        player = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        int blockIndex = Random.Range(0, BlockList.Count);
+        player.transform.position = new Vector3(BlockList[blockIndex].transform.position.x, BlockList[blockIndex].transform.position.y+1, BlockList[blockIndex].transform.position.z);
+        player.AddComponent<Player>();
+    }
+
+    public static void MovePlayer()
+    {
+        player.transform.GetComponent<Player>().PlayerMove();
+    }
 }
