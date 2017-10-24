@@ -4,20 +4,17 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour {
 
-	[Header("[블록]")]
+	//[Header("[블록]")]
     private GameObject SoilPrefab;
-    //public GameObject GoldPrefab;
-    //public GameObject DiaPrefab;
-    //public GameObject GrassPrefab;
-    //public GameObject SandPrefab;
+    private List<GameObject> BlockList = new List<GameObject>();
 
     [Header("[맵 정보]")]
     private int Width_x = 50;
     private int Width_z = 50;
     public float Wavelength = 0;    // 파장
     public float Amplitude = 0;     // 진폭 (최대 높이 값)
-
-    private List<GameObject> BlockList = new List<GameObject>();
+    
+    public Vector3 Obpos;
 
     private void Awake () {
         SoilPrefab = Resources.Load<GameObject>("03.Prefabs/Soil");
@@ -26,7 +23,11 @@ public class GameManager : MonoBehaviour {
         {
             for(int z=0; z< Width_z; z++)
             {
-                BlockList.Add(Instantiate(SoilPrefab, new Vector3(x, 0, z), Quaternion.identity));
+                //BlockList.Add(Instantiate(SoilPrefab, new Vector3(x, 0, z), Quaternion.identity));
+                GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                cube.transform.position = new Vector3(x, 0, z);
+                cube.AddComponent<Block>();
+                BlockList.Add(cube);
             }
         }
 
