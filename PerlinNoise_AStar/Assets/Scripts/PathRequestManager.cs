@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Collections.Generic;
 using System;
 
 public class PathRequestManager : MonoBehaviour {
@@ -18,6 +17,12 @@ public class PathRequestManager : MonoBehaviour {
     {
         instance = this;
         pathfinding = GetComponent<Pathfinding>();
+    }
+
+    public void RemovePath()
+    {
+        isProcessingPath = false;
+        instance.pathRequestQueue.Clear();
     }
 
     public static void RequestPath(Vector3 pathStart, Vector3 pathEnd, Action<Vector3[], bool> callback)

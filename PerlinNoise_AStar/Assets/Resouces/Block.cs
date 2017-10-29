@@ -10,7 +10,6 @@ public class Block : MonoBehaviour {
     
     private void Awake() {
         instance = this;
-        //material = Resources.Load<Material>("Materials/soil");
         transform.GetComponent<Renderer>().material.color = Color.gray;
     }
     

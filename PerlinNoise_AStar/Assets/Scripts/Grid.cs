@@ -38,7 +38,8 @@ public class Grid : MonoBehaviour {
     {
         player = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
         int blockIndex = Random.Range(0, BlockList.Count);
-        player.transform.position = new Vector3(BlockList[blockIndex].transform.position.x, BlockList[blockIndex].transform.position.y + (BlockList[blockIndex].transform.localScale.y/2) + 1, BlockList[blockIndex].transform.position.z);
+        player.transform.position = new Vector3(BlockList[blockIndex].transform.position.x, BlockList[blockIndex].transform.position.y + (BlockList[blockIndex].transform.localScale.y/2) + 0.25f, BlockList[blockIndex].transform.position.z);
+        player.transform.localScale = new Vector3(1, 0.25f, 1);
         player.AddComponent<Unit>();
     }
 
@@ -95,18 +96,23 @@ public class Grid : MonoBehaviour {
     public List<Node> GetNeighbours(Node node)
     {
         List<Node> neighbours = new List<Node>();
-
+        int curblockindex = node.gridX * 50 + node.gridY * 1;
         for (int x = -1; x <= 1; x++)
         {
             for (int y = -1; y <= 1; y++)
             {
-                if (x == 0 && y == 0)
+                if (Mathf.Abs(x) == Mathf.Abs(y))
                 {
                     continue;
                 }
                 int checkX = node.gridX + x;
                 int checkY = node.gridY + y;
+                int blockindex = checkX * 50 + checkY * 1;
 
+                if (0.5f < Mathf.Abs(BlockList[blockindex].transform.localScale.y - BlockList[curblockindex].transform.localScale.y))
+                {
+                    continue;
+                }
                 if (checkX >= 0 && checkX < gridSizeX && checkY >= 0 && checkY < gridSizeY)
                 {
                     neighbours.Add(grid[checkX, checkY]);
@@ -141,37 +147,18 @@ public class Grid : MonoBehaviour {
         Vector3 pos = new Vector3(posx, 0, posy);
         return pos;
     }
-
-    //public List<Node> path;
-
+    
     void OnDrawGizmos()
     {
         Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
 
-        //if(displayGridGizmos)
-        //{
-        //    if(path != null)
-        //    {
-        //        foreach(Node n in path)
-        //        {
-        //            Gizmos.color = Color.black;
-        //            Gizmos.DrawCube(n.worldPosition, Vector3.one * (nodeDiameter - .1f));
-        //        }
-        //    }
-        //}
-        //else
-        //{
-            if (grid != null && displayGridGizmos)
+        if (grid != null && displayGridGizmos)
+        {
+            foreach (Node n in grid)
             {
-                foreach (Node n in grid)
-                {
-                    Gizmos.color = (n.walkable) ? Color.white : Color.red;
-                    //if (path != null)
-                    //    if (path.Contains(n))
-                    //        Gizmos.color = Color.black;
-                    Gizmos.DrawCube(n.worldPosition, Vector3.one * (nodeDiameter - .1f));
-                }
+                Gizmos.color = (n.walkable) ? Color.white : Color.red;
+                Gizmos.DrawCube(n.worldPosition, Vector3.one * (nodeDiameter - .1f));
             }
-        //}
+        }
     }
 }

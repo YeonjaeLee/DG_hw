@@ -9,10 +9,9 @@ public class Unit : MonoBehaviour {
     Vector3[] path;
     int targetIndex;
 
-    private void Start()
+    private void Awake()
     {
         transform.GetComponent<Renderer>().material.color = Color.red;
-        //PathRequestManager.RequestPath(transform.position, target.position, OnPathFound);
     }
 
     public void PlayerMove()
@@ -33,6 +32,7 @@ public class Unit : MonoBehaviour {
     IEnumerator FollowPath()
     {
         Vector3 currentWaypoint = path[0];
+        targetIndex = 0;
 
         while(true)
         {
