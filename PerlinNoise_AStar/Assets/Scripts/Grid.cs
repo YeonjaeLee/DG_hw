@@ -101,14 +101,14 @@ public class Grid : MonoBehaviour {
         {
             for (int y = -1; y <= 1; y++)
             {
-                if (Mathf.Abs(x) == Mathf.Abs(y))
+                int checkX = node.gridX + x;
+                int checkY = node.gridY + y;
+                if (Mathf.Abs(x) == Mathf.Abs(y) || checkX > 48 || checkY > 48)
                 {
                     continue;
                 }
-                int checkX = node.gridX + x;
-                int checkY = node.gridY + y;
+                
                 int blockindex = checkX * 50 + checkY * 1;
-
                 if (0.5f < Mathf.Abs(BlockList[blockindex].transform.localScale.y - BlockList[curblockindex].transform.localScale.y))
                 {
                     continue;
